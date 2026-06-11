@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Help-Me DA</title>
+  <style>
+    body { font-family: Arial; }
+    #chat { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+    input { width: 80%; padding: 10px; }
+    button { padding: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>🤖 Help-Me DA (Beta)</h2>
+
+<div id="chat"></div>
+
+<input id="msg" placeholder="Scrivi il problema..." />
+<button onclick="send()">Invia</button>
+
+<p id="stats"></p>
+
+<script>
+
+async function send() {
+  const message = document.getElementById("msg").value;
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("chat").innerHTML += 
+    "<p><b>Utente:</b> " + message + "</p>";
+
+  
+document.getElementById("chat").innerHTML += 
+  "<p><b>Bot:</b> " + data.reply + "</p>" +
+  "<button onclick='resolveTicket(" + data.ticket_id + ")'>✅ Risolto</button>";
+
+  document.getElementById("msg").value = "";
+
+  loadStats();
+}
+
+async function loadStats() {
+  const res = await fetch("/stats");
+  const data = await res.json();
+
+  document.getElementById("stats").innerText =
+    "📊 Ticket totali: " + data.totale + " | Risolti: " + data.risolti;
+}
+
+async function resolveTicket(id) {
+  await fetch("/resolve", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ id })
+  });
+
+  alert("✅ Ticket " + id + " risolto!");
+  loadStats();
+}
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+const express = require("express");
+const app = express();
+
+app.use(express.json());
+
+app.post("/chat", (req, res) => {
+  const { message } = req.body;
+
+  res.json({
+    ai_response: "Hai scritto: " + message
+  });
+});
+
+app.listen(3000, () => {
+  console.log("✅ Server attivo su http://localhost:3000");
+});
